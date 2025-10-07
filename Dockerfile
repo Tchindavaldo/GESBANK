@@ -41,17 +41,47 @@ RUN mkdir -p /app/logs && \
 # Changer vers l'utilisateur non-root
 USER bankapp
 
-# Exposer le port 8080
+# Exposer le port (Cloud Run injecte automatiquement la variable PORT)
 EXPOSE 8080
 
-# Variables d'environnement par défaut
-ENV JAVA_OPTS="-Xms512m -Xmx1024m" \
-    SERVER_PORT=8080 \
-    SPRING_PROFILES_ACTIVE=prod
+# ============================================
+# VARIABLES D'ENVIRONNEMENT SUPABASE
+# ============================================
+# ⚠️ IMPORTANT : Remplacez [YOUR-PASSWORD] par votre vrai mot de passe Supabase !
+# Ces valeurs sont configurées en dur pour un déploiement automatique sur Cloud Run
 
-# Healthcheck pour vérifier que l'application est en cours d'exécution
-HEALTHCHECK --interval=30s --timeout=3s --start-period=60s --retries=3 \
-    CMD wget --no-verbose --tries=1 --spider http://localhost:8080/actuator/health || exit 1
+# Configuration Base de Données Supabase
+ENV DB_HOST=db.okxwulsfwuaczhtisjsb.supabase.co \
+    DB_PORT=5432 \
+    DB_NAME=postgres \
+    DB_USERNAME=postgres \
+    DB_PASSWORD=Nemerinho2001
 
-# Commande de démarrage de l'application
-ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar app.jar"]
+# Configuration JWT
+ENV JWT_SECRET=404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+
+# Configuration Spring
+ENV SPRING_PROFILES_ACTIVE=prod
+
+# Configuration JVM optimisée pour Cloud Run
+ENV JAVA_OPTS="-Xms512m -Xmx1024m -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0"
+
+# Configuration du port serveur
+ENV SERVER_PORT=8080
+
+# ============================================
+# COMMANDE DE DÉMARRAGE
+# ============================================
+# Cloud Run injecte automatiquement la variable PORT
+# Priorité: PORT (Cloud Run) > SERVER_PORT > 8080 (par défaut)
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -Dserver.port=${PORT:-${SERVER_PORT:-8080}} -Djava.security.egd=file:/dev/./urandom -jar app.jar"]
+
+# ============================================
+# INSTRUCTIONS POUR DÉPLOIEMENT
+# ============================================
+# 1. Remplacez [YOUR-PASSWORD] par votre mot de passe Supabase (ligne 52)
+# 2. Build l'image: docker build -t votre-username/bank-system:latest .
+# 3. Push sur Docker Hub: docker push votre-username/bank-system:latest
+# 4. Sur Cloud Run, déployez simplement l'image sans configurer de variables !
+# 5. L'application se connectera automatiquement à Supabase
+# ============================================
