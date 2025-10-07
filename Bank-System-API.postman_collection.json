@@ -1,0 +1,973 @@
+{
+	"info": {
+		"_postman_id": "bank-system-api-collection",
+		"name": "Bank Management System API",
+		"description": "Complete API collection for testing the Bank Management System\n\n## Getting Started\n\n1. Set the `baseUrl` variable to your API URL (default: http://localhost:8080)\n2. Register a new user or login with existing credentials\n3. The JWT token will be automatically saved and used for subsequent requests\n\n## Authentication\n\nAll endpoints except `/api/auth/**` require JWT authentication.\nThe token is automatically included in requests after login.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "bank-system-v1"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Register User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.collectionVariables.set(\"accessToken\", jsonData.accessToken);",
+									"    pm.collectionVariables.set(\"refreshToken\", jsonData.refreshToken);",
+									"    pm.collectionVariables.set(\"userId\", jsonData.userInfo.id);",
+									"    console.log(\"User registered and tokens saved\");",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"testuser\",\n    \"email\": \"testuser@example.com\",\n    \"password\": \"password123\",\n    \"firstName\": \"Test\",\n    \"lastName\": \"User\",\n    \"phoneNumber\": \"+33612345678\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/register",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"register"
+							]
+						},
+						"description": "Register a new user account"
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.collectionVariables.set(\"accessToken\", jsonData.accessToken);",
+									"    pm.collectionVariables.set(\"refreshToken\", jsonData.refreshToken);",
+									"    pm.collectionVariables.set(\"userId\", jsonData.userInfo.id);",
+									"    console.log(\"Logged in successfully. Token saved.\");",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"usernameOrEmail\": \"testuser\",\n    \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						},
+						"description": "Login with username/email and password"
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.collectionVariables.set(\"accessToken\", jsonData.accessToken);",
+									"    console.log(\"Token refreshed successfully\");",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"refreshToken\": \"{{refreshToken}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/refresh",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"refresh"
+							]
+						},
+						"description": "Refresh the access token using refresh token"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Current User",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/me",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"me"
+							]
+						},
+						"description": "Get current authenticated user information"
+					},
+					"response": []
+				},
+				{
+					"name": "Auth Status",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/status",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"status"
+							]
+						},
+						"description": "Check authentication status"
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/logout",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"logout"
+							]
+						},
+						"description": "Logout current user"
+					},
+					"response": []
+				}
+			],
+			"description": "Authentication endpoints for user registration, login, and token management"
+		},
+		{
+			"name": "Accounts",
+			"item": [
+				{
+					"name": "Create Account",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.collectionVariables.set(\"accountId\", jsonData.id);",
+									"    pm.collectionVariables.set(\"accountNumber\", jsonData.accountNumber);",
+									"    console.log(\"Account created: \" + jsonData.accountNumber);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"accountType\": \"CHECKING\",\n    \"initialBalance\": 1000.00,\n    \"currency\": \"EUR\",\n    \"description\": \"Primary checking account\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/accounts",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"accounts"
+							]
+						},
+						"description": "Create a new bank account"
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Accounts",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/accounts",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"accounts"
+							]
+						},
+						"description": "Get all accounts for the current user"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Account by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/accounts/{{accountId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"accounts",
+								"{{accountId}}"
+							]
+						},
+						"description": "Get account details by ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Account by Number",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/accounts/number/{{accountNumber}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"accounts",
+								"number",
+								"{{accountNumber}}"
+							]
+						},
+						"description": "Get account details by account number"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Active Accounts",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/accounts/active",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"accounts",
+								"active"
+							]
+						},
+						"description": "Get all active accounts"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Total Balance",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/accounts/balance/total",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"accounts",
+								"balance",
+								"total"
+							]
+						},
+						"description": "Get total balance of all active accounts"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Account Statistics",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/accounts/statistics",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"accounts",
+								"statistics"
+							]
+						},
+						"description": "Get account statistics for current user"
+					},
+					"response": []
+				},
+				{
+					"name": "Suspend Account",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/accounts/{{accountId}}/suspend",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"accounts",
+								"{{accountId}}",
+								"suspend"
+							]
+						},
+						"description": "Suspend an account"
+					},
+					"response": []
+				},
+				{
+					"name": "Reactivate Account",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/accounts/{{accountId}}/reactivate",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"accounts",
+								"{{accountId}}",
+								"reactivate"
+							]
+						},
+						"description": "Reactivate a suspended account"
+					},
+					"response": []
+				},
+				{
+					"name": "Deactivate Account",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/accounts/{{accountId}}/deactivate",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"accounts",
+								"{{accountId}}",
+								"deactivate"
+							]
+						},
+						"description": "Deactivate an account (balance must be zero)"
+					},
+					"response": []
+				}
+			],
+			"description": "Account management endpoints"
+		},
+		{
+			"name": "Transactions",
+			"item": [
+				{
+					"name": "Deposit",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    console.log(\"Deposit successful. Reference: \" + jsonData.referenceNumber);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"amount\": 500.00,\n    \"description\": \"Salary deposit\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/transactions/accounts/{{accountId}}/deposit",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"transactions",
+								"accounts",
+								"{{accountId}}",
+								"deposit"
+							]
+						},
+						"description": "Make a deposit to an account"
+					},
+					"response": []
+				},
+				{
+					"name": "Withdraw",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    console.log(\"Withdrawal successful. Reference: \" + jsonData.referenceNumber);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"amount\": 200.00,\n    \"description\": \"ATM withdrawal\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/transactions/accounts/{{accountId}}/withdraw",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"transactions",
+								"accounts",
+								"{{accountId}}",
+								"withdraw"
+							]
+						},
+						"description": "Make a withdrawal from an account"
+					},
+					"response": []
+				},
+				{
+					"name": "Transfer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    console.log(\"Transfer successful. Reference: \" + jsonData.referenceNumber);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"amount\": 150.00,\n    \"destinationAccountNumber\": \"FR7698765432109876543210\",\n    \"description\": \"Payment for services\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/transactions/accounts/{{accountId}}/transfer",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"transactions",
+								"accounts",
+								"{{accountId}}",
+								"transfer"
+							]
+						},
+						"description": "Transfer money to another account"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Transaction History",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/transactions/history",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"transactions",
+								"history"
+							]
+						},
+						"description": "Get transaction history for all user accounts"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Transaction History (Paginated)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/transactions/history/paginated?page=0&size=20&sortBy=transactionDate&sortDirection=DESC",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"transactions",
+								"history",
+								"paginated"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "size",
+									"value": "20"
+								},
+								{
+									"key": "sortBy",
+									"value": "transactionDate"
+								},
+								{
+									"key": "sortDirection",
+									"value": "DESC"
+								}
+							]
+						},
+						"description": "Get paginated transaction history"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Account Transaction History",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/transactions/accounts/{{accountId}}/history",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"transactions",
+								"accounts",
+								"{{accountId}}",
+								"history"
+							]
+						},
+						"description": "Get transaction history for a specific account"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Account Transaction History (Paginated)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/transactions/accounts/{{accountId}}/history/paginated?page=0&size=10&sortBy=transactionDate&sortDirection=DESC",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"transactions",
+								"accounts",
+								"{{accountId}}",
+								"history",
+								"paginated"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "size",
+									"value": "10"
+								},
+								{
+									"key": "sortBy",
+									"value": "transactionDate"
+								},
+								{
+									"key": "sortDirection",
+									"value": "DESC"
+								}
+							]
+						},
+						"description": "Get paginated transaction history for a specific account"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Transaction by Reference",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/transactions/reference/TXN-20240115103000-ABCD1234",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"transactions",
+								"reference",
+								"TXN-20240115103000-ABCD1234"
+							]
+						},
+						"description": "Get transaction details by reference number"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Transactions by Date Range",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/transactions/accounts/{{accountId}}/history/period?startDate=2024-01-01T00:00:00&endDate=2024-12-31T23:59:59",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"transactions",
+								"accounts",
+								"{{accountId}}",
+								"history",
+								"period"
+							],
+							"query": [
+								{
+									"key": "startDate",
+									"value": "2024-01-01T00:00:00"
+								},
+								{
+									"key": "endDate",
+									"value": "2024-12-31T23:59:59"
+								}
+							]
+						},
+						"description": "Get transactions within a date range"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Transactions by Type",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/transactions/accounts/{{accountId}}/history/type/DEPOSIT",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"transactions",
+								"accounts",
+								"{{accountId}}",
+								"history",
+								"type",
+								"DEPOSIT"
+							]
+						},
+						"description": "Get transactions by type (DEPOSIT, WITHDRAWAL, TRANSFER)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Transaction Statistics",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/transactions/accounts/{{accountId}}/statistics",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"transactions",
+								"accounts",
+								"{{accountId}}",
+								"statistics"
+							]
+						},
+						"description": "Get transaction statistics for an account"
+					},
+					"response": []
+				},
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/transactions/health",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"transactions",
+								"health"
+							]
+						},
+						"description": "Check transaction service health"
+					},
+					"response": []
+				}
+			],
+			"description": "Transaction management endpoints for deposits, withdrawals, and transfers"
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "accessToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "refreshToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "userId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "accountId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "accountNumber",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
